@@ -29,7 +29,7 @@ function HomePage() {
       <TextField
         type="text"
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) => setInput(e.target.value.toUpperCase())}
         placeholder="Digite o ticker (ex: PETR4)"
       />
       <button onClick={handleSearch} style={{ marginLeft: "10px" }}>
