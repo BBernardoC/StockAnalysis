@@ -1,17 +1,11 @@
 from flask import jsonify
+
 def render_stock(stock):
+    print("cheugei view")
     if stock is None:
         return jsonify({}), 404
-    stock_dict = stock.to_dict(orient="records")
-    converted = []
 
-    for item in stock_dict:
-        new_item = {}
-        for key, value in item.items():
-            new_item[key[0]] = value
-        converted.append(new_item)
+    if isinstance(stock, list) and all(hasattr(s, "to_dict") for s in stock):
+        return jsonify([s.to_dict() for s in stock])
 
-    print(stock)
-    print('--------------')
-    print(stock_dict)
-    return jsonify(converted)
+    return jsonify({"error": "Formato de dados não suportado"}), 500
