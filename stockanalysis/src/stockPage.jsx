@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 function StockPage() {
   const { ticker } = useParams();
   const [stockData, setStockData] = useState(null);
-
+  const [stockInfo, setStockInfo] = useState(null);
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
     ...theme.typography.body2,
@@ -29,6 +29,15 @@ function StockPage() {
       .then((res) => res.json())
       .then((json) => setStockData(json))
       .catch(() => setStockData({ error: "erro ao buscar os dados" }));
+  }, [ticker]);
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/stock/${ticker}`)
+      .then((res) => res.json())
+      .then((json) => setStockInfo(json))
+      .catch(() =>
+        setStockInfo({ error: "erro ao buscar os dados stockinfo" })
+      );
   }, [ticker]);
 
   return (
@@ -107,6 +116,7 @@ function StockPage() {
           </Item>
         </Stack>
         {stockData && <pre>{JSON.stringify(stockData, null, 2)}</pre>}
+        {stockInfo && <pre>{JSON.stringify(stockInfo, null, 2)}</pre>}
       </Box>
     </Box>
   );

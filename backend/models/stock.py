@@ -21,63 +21,85 @@ class Stock:
 
 
 class StockInfo:
-    def __init__(self, ticker, priceToBookRatio, priceToEarningsRatio, dividendYield, debtToEquity, ebitda, enterpriseToEbitda, enterpriseToRevenue, enterpriseValue, fiftyTwoWeekHigh, fiftyTwoWeekHighChange, fiftyTwoWeekHighChangePercent, fiftyTwoWeekLow, fiftyTwoWeekLowChange, fiftyTwoWeekLowChangePercent, floatShares, marketCap, overallRisk, payoutRatio, returnOnAssets, returnOnEquity, revenueGrowth, revenuePerShare, targetHighPrice, targetLowPrice, targetMeanPrice, targetMedianPrice, totalDebt):
+    def __init__(self, ticker, ebitda, floatShares, overallRisk, targetHighPrice, targetLowPrice,
+                 targetMeanPrice, targetMedianPrice, totalDebt, bookValue, eps, annualDividendPerShare,
+                 totalEquity, cash, revenue, netIncome, lastYearRevenue, fiftyTwoWeekHigh, fiftyTwoWeekLow,
+                 priceToEarningsRatio, dividendYield, debtToEquity, enterpriseValue, enterpriseToEbitda,
+                 enterpriseToRevenue, marketCap, payoutRatio, returnOnEquity, revenueGrowth, revenuePerShare,
+                 fiftyTwoWeekHighChange, fiftyTwoWeekHighChangePercent, fiftyTwoWeekLowChange, fiftyTwoWeekLowChangePercent):
+        
         self.ticker = ticker
-        self.priceToBookRatio = priceToBookRatio
-        self.priceToEarningsRatio = priceToEarningsRatio
-        self.dividendYield =  dividendYield
-        self.debtToEquity = debtToEquity
         self.ebitda = ebitda
-        self.enterpriseToEbitda = enterpriseToEbitda
-        self.enterpriseToRevenue = enterpriseToRevenue
-        self.enterpriseValue = enterpriseValue
-        self.fiftyTwoWeekHigh = fiftyTwoWeekHigh
-        self.fiftyTwoWeekHighChange = fiftyTwoWeekHighChange
-        self.fiftyTwoWeekHighChangePercent = fiftyTwoWeekHighChangePercent
-        self.fiftyTwoWeekLow = fiftyTwoWeekLow
-        self.fiftyTwoWeekLowChange = fiftyTwoWeekLowChange
-        self.fiftyTwoWeekLowChangePercent = fiftyTwoWeekLowChangePercent
         self.floatShares = floatShares
-        self.marketCap = marketCap
         self.overallRisk = overallRisk
-        self.payoutRatio = payoutRatio
-        self.returnOnAssets = returnOnAssets
-        self.returnOnEquity = returnOnEquity
-        self.revenueGrowth = revenueGrowth
-        self.revenuePerShare = revenuePerShare
         self.targetHighPrice = targetHighPrice
         self.targetLowPrice = targetLowPrice
         self.targetMeanPrice = targetMeanPrice
         self.targetMedianPrice = targetMedianPrice
         self.totalDebt = totalDebt
 
+        self.bookValue = bookValue
+        self.eps = eps
+        self.annualDividendPerShare = annualDividendPerShare
+        self.totalEquity = totalEquity
+        self.cash = cash
+        self.revenue = revenue
+        self.netIncome = netIncome
+        self.lastYearRevenue = lastYearRevenue
+        self.fiftyTwoWeekHigh = fiftyTwoWeekHigh
+        self.fiftyTwoWeekLow = fiftyTwoWeekLow
+
+        self.priceToEarningsRatio = priceToEarningsRatio
+        self.dividendYield = dividendYield
+        self.debtToEquity = debtToEquity
+        self.enterpriseValue = enterpriseValue
+        self.enterpriseToEbitda = enterpriseToEbitda
+        self.enterpriseToRevenue = enterpriseToRevenue
+        self.marketCap = marketCap
+        self.payoutRatio = payoutRatio
+        self.returnOnEquity = returnOnEquity
+        self.revenueGrowth = revenueGrowth
+        self.revenuePerShare = revenuePerShare
+        self.fiftyTwoWeekHighChange = fiftyTwoWeekHighChange
+        self.fiftyTwoWeekHighChangePercent = fiftyTwoWeekHighChangePercent
+        self.fiftyTwoWeekLowChange = fiftyTwoWeekLowChange
+        self.fiftyTwoWeekLowChangePercent = fiftyTwoWeekLowChangePercent
+
+
     def to_dict(self):
         return {
-    'ticker_name': self.ticker,
-    'priceToBookRatio': self.priceToBookRatio,
-    'priceToEarningsRatio': self.priceToEarningsRatio,
-    'dividendYield': self.dividendYield,
-    'debtToEquity': self.debtToEquity,
-    'ebitda':  self.ebitda,
-    'enterpriseToEbitda':  self.enterpriseToEbitda,
-    'enterpriseToRevenue':  self.enterpriseToRevenue,
-    'enterpriseValue':  self.enterpriseValue,
-    'fiftyTwoWeekHigh':  self.fiftyTwoWeekHigh,
-    'fiftyTwoWeekHighChange':  self.fiftyTwoWeekHighChange,
-    'fiftyTwoWeekHighChangePercent':  self.fiftyTwoWeekHighChangePercent,
-    'fiftyTwoWeekLow':  self.fiftyTwoWeekLow,
-    'fiftyTwoWeekLowChange':  self.fiftyTwoWeekLowChange,
-    'fiftyTwoWeekLowChangePercent':  self.fiftyTwoWeekLowChangePercent,
-    'floatShares':  self.floatShares,
-    'marketCap':  self.marketCap,
-    'overallRisk':  self.overallRisk,
-    'payoutRatio':  self.payoutRatio,
-    'returnOnAssets':  self.returnOnAssets,
-    'returnOnEquity':  self.returnOnEquity,
-    'revenueGrowth':  self.revenueGrowth,
-    'revenuePerShare':  self.revenuePerShare,
-    'targetHighPrice':  self.targetHighPrice,
-    'targetLowPrice':  self.targetLowPrice,
-    'targetMeanPrice':  self.targetMeanPrice,
-    'targetMedianPrice':  self.targetMedianPrice,
-    'totalDebt':  self.totalDebt}
+            "ticker": self.ticker,
+            "ebitda": self.ebitda,
+            "floatShares": self.floatShares,
+            "overallRisk": self.overallRisk,
+            "targetHighPrice": self.targetHighPrice,
+            "targetLowPrice": self.targetLowPrice,
+            "targetMeanPrice": self.targetMeanPrice,
+            "targetMedianPrice": self.targetMedianPrice,
+            "totalDebt": self.totalDebt,
+            "bookValue": self.bookValue,
+            "eps": self.eps,
+            "annualDividendPerShare": self.annualDividendPerShare,
+            "totalEquity": self.totalEquity,
+            "cash": self.cash,
+            "revenue": self.revenue,
+            "netIncome": self.netIncome,
+            "lastYearRevenue": self.lastYearRevenue,
+            "fiftyTwoWeekHigh": self.fiftyTwoWeekHigh,
+            "fiftyTwoWeekLow": self.fiftyTwoWeekLow,
+            "priceToEarningsRatio": self.priceToEarningsRatio,
+            "dividendYield": self.dividendYield,
+            "debtToEquity": self.debtToEquity,
+            "enterpriseValue": self.enterpriseValue,
+            "enterpriseToEbitda": self.enterpriseToEbitda,
+            "enterpriseToRevenue": self.enterpriseToRevenue,
+            "marketCap": self.marketCap,
+            "payoutRatio": self.payoutRatio,
+            "returnOnEquity": self.returnOnEquity,
+            "revenueGrowth": self.revenueGrowth,
+            "revenuePerShare": self.revenuePerShare,
+            "fiftyTwoWeekHighChange": self.fiftyTwoWeekHighChange,
+            "fiftyTwoWeekHighChangePercent": self.fiftyTwoWeekHighChangePercent,
+            "fiftyTwoWeekLowChange": self.fiftyTwoWeekLowChange,
+            "fiftyTwoWeekLowChangePercent": self.fiftyTwoWeekLowChangePercent
+        }

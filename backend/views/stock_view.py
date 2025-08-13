@@ -9,3 +9,11 @@ def render_stock(stock):
         return jsonify([s.to_dict() for s in stock])
 
     return jsonify({"error": "Formato de dados não suportado"}), 500
+
+
+def render_stock_info(stock_info):
+    if stock_info is None:
+        print("cheguei na view none")
+
+        return jsonify({}), 404
+    return jsonify(stock_info)
