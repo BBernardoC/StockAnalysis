@@ -1,53 +1,113 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import { fetchStock } from "./stockPriceutils";
+import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
+import { useParams } from "react-router-dom";
 
 function StockPage() {
-  const [ticker, setTicker] = useState("");
-  const [error, setError] = useState("");
+  const { ticker } = useParams();
   const [stockData, setStockData] = useState(null);
 
-  const fetchStock = async () => {
-    setError("");
-    setStockData(null);
-    try {
-      const res = await fetch(`http://127.0.0.1:5000/stock/${ticker}/1mo`);
-      if (!res.ok) {
-        setError("deu bad");
-        return;
-      }
-      const data = await res.json();
-      setStockData(data);
-    } catch (err) {
-      setError("erro ao buscar acao");
-    }
-  };
+  const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: "#fff",
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    color: (theme.vars ?? theme).palette.text.secondary,
+    ...theme.applyStyles("dark", {
+      backgroundColor: "#1A2027",
+    }),
+  }));
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:5000/stock/${ticker}/1mo`)
+      .then((res) => res.json())
+      .then((json) => setStockData(json))
+      .catch(() => setStockData({ error: "erro ao buscar os dados" }));
+  }, [ticker]);
+
   return (
     <Box
       sx={{
         height: "100vh",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        marginTop: "20px",
       }}
     >
-      <TextField
-        id="outlined-basic"
-        label="Stocks"
-        variant="outlined"
-        value={ticker}
-        onChange={(e) => setTicker(e.target.value)}
-      />
+      <Box
+        justifyContent={"center"}
 
-      <button onClick={fetchStock} style={{ marginLeft: "10px" }}>
-        Buscar
-      </button>
-
-      <h2>Resultado:</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {stockData && <pre>{JSON.stringify(stockData, null, 2)}</pre>}
+        /*second box to hold some metrics*/
+      >
+        <Stack
+          direction="row"
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={2}
+        >
+          <Item
+            sx={{
+              width: "27vh",
+              height: "15vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            Preco
+          </Item>
+          <Item
+            sx={{
+              width: "27vh",
+              height: "15vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            Variacao
+          </Item>
+          <Item
+            sx={{
+              width: "27vh",
+              height: "15vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            P/L
+          </Item>
+          <Item
+            sx={{
+              width: "27vh",
+              height: "15vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            p/vp
+          </Item>
+          <Item
+            sx={{
+              width: "27vh",
+              height: "15vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            dy
+          </Item>
+        </Stack>
+        {stockData && <pre>{JSON.stringify(stockData, null, 2)}</pre>}
+      </Box>
     </Box>
   );
 }
