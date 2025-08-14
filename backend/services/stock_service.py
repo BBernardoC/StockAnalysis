@@ -60,6 +60,7 @@ def getStockInfo(ticker):
     enterpriseToEbitda = enterpriseValue / ebitda if ebitda else None
     enterpriseToRevenue = enterpriseValue / revenue if revenue else None
     marketCap = currentPrice * floatShares
+    priceToBook = currentPrice/bookValue if bookValue else None
     payoutRatio = annualDividendPerShare / eps if eps else None
     returnOnEquity = netIncome / totalEquity if totalEquity else None
     revenuePerShare = revenue / floatShares if floatShares else None
@@ -96,6 +97,7 @@ def getStockInfo(ticker):
         enterpriseToEbitda=enterpriseToEbitda,
         enterpriseToRevenue=enterpriseToRevenue,
         marketCap=marketCap,
+        priceToBook=priceToBook,
         payoutRatio=payoutRatio,
         returnOnEquity=returnOnEquity,
         revenueGrowth=revenueGrowth,

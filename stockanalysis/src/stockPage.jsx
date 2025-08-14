@@ -13,6 +13,11 @@ function StockPage() {
   const { ticker } = useParams();
   const [stockData, setStockData] = useState(null);
   const [stockInfo, setStockInfo] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [dividendYield, setDividentYield] = useState(null);
+  const [priceToEarningsRatio, setPriceToEarningsRatio] = useState(null);
+  const [priceToBook, setPriceToBook] = useState(null);
+
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
     ...theme.typography.body2,
@@ -34,11 +39,17 @@ function StockPage() {
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/stock/${ticker}`)
       .then((res) => res.json())
-      .then((json) => setStockInfo(json))
+      .then((json) => {
+        setStockInfo(json);
+        setDividentYield(json.dividendYield);
+        setPrice(json.bookValue);
+        setPriceToEarningsRatio(json.priceToEarningsRatio);
+        setPriceToBook(json.priceToBook);
+      })
       .catch(() =>
         setStockInfo({ error: "erro ao buscar os dados stockinfo" })
       );
-  }, [ticker]);
+  }, []);
 
   return (
     <Box
@@ -68,7 +79,7 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            Preco
+            {price}
           </Item>
           <Item
             sx={{
@@ -79,7 +90,7 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            Variacao
+            {dividendYield}
           </Item>
           <Item
             sx={{
@@ -90,7 +101,7 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            P/L
+            {priceToEarningsRatio}
           </Item>
           <Item
             sx={{
@@ -101,7 +112,7 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            p/vp
+            {priceToBook}
           </Item>
           <Item
             sx={{
@@ -112,7 +123,7 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            dy
+            {ticker}
           </Item>
         </Stack>
         {stockData && <pre>{JSON.stringify(stockData, null, 2)}</pre>}

@@ -25,7 +25,7 @@ class StockInfo:
                  targetMeanPrice, targetMedianPrice, totalDebt, bookValue, eps, annualDividendPerShare,
                  totalEquity, cash, revenue, netIncome, lastYearRevenue, fiftyTwoWeekHigh, fiftyTwoWeekLow,
                  priceToEarningsRatio, dividendYield, debtToEquity, enterpriseValue, enterpriseToEbitda,
-                 enterpriseToRevenue, marketCap, payoutRatio, returnOnEquity, revenueGrowth, revenuePerShare,
+                 enterpriseToRevenue, marketCap, priceToBook, payoutRatio, returnOnEquity, revenueGrowth, revenuePerShare,
                  fiftyTwoWeekHighChange, fiftyTwoWeekHighChangePercent, fiftyTwoWeekLowChange, fiftyTwoWeekLowChangePercent):
         
         self.ticker = ticker
@@ -56,6 +56,7 @@ class StockInfo:
         self.enterpriseToEbitda = enterpriseToEbitda
         self.enterpriseToRevenue = enterpriseToRevenue
         self.marketCap = marketCap
+        self.priceToBook = priceToBook
         self.payoutRatio = payoutRatio
         self.returnOnEquity = returnOnEquity
         self.revenueGrowth = revenueGrowth
@@ -94,6 +95,7 @@ class StockInfo:
             "enterpriseToEbitda": self.enterpriseToEbitda,
             "enterpriseToRevenue": self.enterpriseToRevenue,
             "marketCap": self.marketCap,
+            "priceToBook": self.priceToBook,
             "payoutRatio": self.payoutRatio,
             "returnOnEquity": self.returnOnEquity,
             "revenueGrowth": self.revenueGrowth,
