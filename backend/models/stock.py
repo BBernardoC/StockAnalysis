@@ -26,7 +26,7 @@ class StockInfo:
                  totalEquity, cash, revenue, netIncome, lastYearRevenue, fiftyTwoWeekHigh, fiftyTwoWeekLow,
                  priceToEarningsRatio, dividendYield, debtToEquity, enterpriseValue, enterpriseToEbitda,
                  enterpriseToRevenue, marketCap, priceToBook, payoutRatio, returnOnEquity, revenueGrowth, revenuePerShare,
-                 fiftyTwoWeekHighChange, fiftyTwoWeekHighChangePercent, fiftyTwoWeekLowChange, fiftyTwoWeekLowChangePercent):
+                 fiftyTwoWeekHighChange, fiftyTwoWeekHighChangePercent, fiftyTwoWeekLowChange, fiftyTwoWeekLowChangePercent, currentPrice):
         
         self.ticker = ticker
         self.ebitda = ebitda
@@ -66,7 +66,7 @@ class StockInfo:
         self.fiftyTwoWeekLowChange = fiftyTwoWeekLowChange
         self.fiftyTwoWeekLowChangePercent = fiftyTwoWeekLowChangePercent
 
-
+        self.currentPrice = currentPrice
     def to_dict(self):
         return {
             "ticker": self.ticker,
@@ -103,5 +103,6 @@ class StockInfo:
             "fiftyTwoWeekHighChange": self.fiftyTwoWeekHighChange,
             "fiftyTwoWeekHighChangePercent": self.fiftyTwoWeekHighChangePercent,
             "fiftyTwoWeekLowChange": self.fiftyTwoWeekLowChange,
-            "fiftyTwoWeekLowChangePercent": self.fiftyTwoWeekLowChangePercent
+            "fiftyTwoWeekLowChangePercent": self.fiftyTwoWeekLowChangePercent,
+            "currentPrice": self.currentPrice
         }

@@ -105,7 +105,8 @@ def getStockInfo(ticker):
         fiftyTwoWeekHighChange=fiftyTwoWeekHighChange,
         fiftyTwoWeekHighChangePercent=fiftyTwoWeekHighChangePercent,
         fiftyTwoWeekLowChange=fiftyTwoWeekLowChange,
-        fiftyTwoWeekLowChangePercent=fiftyTwoWeekLowChangePercent
+        fiftyTwoWeekLowChangePercent=fiftyTwoWeekLowChangePercent,
+        currentPrice=currentPrice
     )
 
     return stock_info.to_dict()

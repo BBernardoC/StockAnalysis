@@ -13,10 +13,13 @@ function StockPage() {
   const { ticker } = useParams();
   const [stockData, setStockData] = useState(null);
   const [stockInfo, setStockInfo] = useState(null);
+  const [bookValue, setBookValue] = useState(null);
   const [price, setPrice] = useState(null);
   const [dividendYield, setDividentYield] = useState(null);
   const [priceToEarningsRatio, setPriceToEarningsRatio] = useState(null);
   const [priceToBook, setPriceToBook] = useState(null);
+  const [annualDividend, setAnnualDividend] = useState(null);
+  const [eps, setEps] = useState(null);
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
@@ -42,34 +45,114 @@ function StockPage() {
       .then((json) => {
         setStockInfo(json);
         setDividentYield(json.dividendYield);
-        setPrice(json.bookValue);
+        setBookValue(json.bookValue);
         setPriceToEarningsRatio(json.priceToEarningsRatio);
         setPriceToBook(json.priceToBook);
+        setPrice(json.currentPrice);
+        setAnnualDividend(json.annualDividendPerShare);
+        setEps(json.eps);
       })
       .catch(() =>
         setStockInfo({ error: "erro ao buscar os dados stockinfo" })
       );
   }, []);
 
-  return (
-    <Box
-      sx={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "20px",
-      }}
-    >
-      <Box
-        justifyContent={"center"}
+  const CalcBazin = () => {
+    console.log(annualDividend);
+    let priceCeiling = annualDividend / 0.06;
+    return priceCeiling;
+  };
 
-        /*second box to hold some metrics*/
+  const CalcGraham = () => {
+    console.log(eps, bookValue);
+    let calcGraham = Math.sqrt(22.5 * eps * bookValue);
+    return calcGraham;
+  };
+
+  return (
+    <Box>
+      <Box
+        sx={{
+          height: "30vh",
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "20px",
+        }}
       >
-        <Stack
-          direction="row"
-          divider={<Divider orientation="vertical" flexItem />}
-          spacing={2}
+        <Box
+          justifyContent={"center"}
+
+          /*second box to hold some metrics*/
         >
+          <Stack
+            direction="row"
+            divider={<Divider orientation="vertical" flexItem />}
+            spacing={2}
+          >
+            <Item
+              sx={{
+                width: "27vh",
+                height: "15vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {price}
+            </Item>
+            <Item
+              sx={{
+                width: "27vh",
+                height: "15vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {dividendYield}
+            </Item>
+            <Item
+              sx={{
+                width: "27vh",
+                height: "15vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {priceToEarningsRatio}
+            </Item>
+            <Item
+              sx={{
+                width: "27vh",
+                height: "15vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {priceToBook}
+            </Item>
+            <Item
+              sx={{
+                width: "27vh",
+                height: "15vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {ticker}
+            </Item>
+          </Stack>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+        }}
+      >
+        <Stack>
           <Item
             sx={{
               width: "27vh",
@@ -79,7 +162,8 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            {price}
+            Calculo Bazin (yield 6%)
+            {CalcBazin()}
           </Item>
           <Item
             sx={{
@@ -90,44 +174,10 @@ function StockPage() {
               alignItems: "center",
             }}
           >
-            {dividendYield}
-          </Item>
-          <Item
-            sx={{
-              width: "27vh",
-              height: "15vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {priceToEarningsRatio}
-          </Item>
-          <Item
-            sx={{
-              width: "27vh",
-              height: "15vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {priceToBook}
-          </Item>
-          <Item
-            sx={{
-              width: "27vh",
-              height: "15vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {ticker}
+            Calculo Graham
+            {CalcGraham()}
           </Item>
         </Stack>
-        {stockData && <pre>{JSON.stringify(stockData, null, 2)}</pre>}
-        {stockInfo && <pre>{JSON.stringify(stockInfo, null, 2)}</pre>}
       </Box>
     </Box>
   );
