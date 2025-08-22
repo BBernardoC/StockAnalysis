@@ -8,6 +8,19 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import { useParams } from "react-router-dom";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 function StockPage() {
   const { ticker } = useParams();
@@ -89,94 +102,168 @@ function StockPage() {
             divider={<Divider orientation="vertical" flexItem />}
             spacing={2}
           >
-            <Item
-              sx={{
-                width: "27vh",
-                height: "15vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {price}
-            </Item>
-            <Item
-              sx={{
-                width: "27vh",
-                height: "15vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {dividendYield}
-            </Item>
-            <Item
-              sx={{
-                width: "27vh",
-                height: "15vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {priceToEarningsRatio}
-            </Item>
-            <Item
-              sx={{
-                width: "27vh",
-                height: "15vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {priceToBook}
-            </Item>
-            <Item
-              sx={{
-                width: "27vh",
-                height: "15vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {ticker}
-            </Item>
+            <Card variant="outlined" sx={{ maxWidth: 360 }}>
+              <Box sx={{ p: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <Typography gutterBottom variant="h6" component="div">
+                    Preço
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2 }}>
+                <Typography gutterBottom variant="body2">
+                  {price}
+                </Typography>
+              </Box>
+            </Card>
+            <Card variant="outlined" sx={{ maxWidth: 360 }}>
+              <Box sx={{ p: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <Typography gutterBottom variant="h6" component="div">
+                    Dividend Yield
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2 }}>
+                <Typography gutterBottom variant="body2">
+                  {dividendYield}
+                </Typography>
+              </Box>
+            </Card>
+            <Card variant="outlined" sx={{ maxWidth: 360 }}>
+              <Box sx={{ p: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <Typography gutterBottom variant="h6" component="div">
+                    P/L
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2 }}>
+                <Typography gutterBottom variant="body2">
+                  {priceToEarningsRatio}
+                </Typography>
+              </Box>
+            </Card>
+            <Card variant="outlined" sx={{ maxWidth: 360 }}>
+              <Box sx={{ p: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <Typography gutterBottom variant="h6" component="div">
+                    P/VP
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2 }}>
+                <Typography gutterBottom variant="body2">
+                  {priceToBook}
+                </Typography>
+              </Box>
+            </Card>
+            <Card variant="outlined" sx={{ maxWidth: 360 }}>
+              <Box sx={{ p: 2 }}>
+                <Stack
+                  direction="row"
+                  sx={{ justifyContent: "space-between", alignItems: "center" }}
+                >
+                  <Typography gutterBottom variant="h6" component="div">
+                    Ticker{" "}
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: 2 }}>
+                <Typography gutterBottom variant="body2">
+                  {ticker}
+                </Typography>
+              </Box>
+            </Card>
           </Stack>
         </Box>
       </Box>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          width={500}
+          height={300}
+          data={stockData}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="pv"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+        </LineChart>
+      </ResponsiveContainer>
       <Box
         sx={{
           display: "flex",
         }}
       >
-        <Stack>
-          <Item
-            sx={{
-              width: "27vh",
-              height: "15vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            Calculo Bazin (yield 6%)
-            {CalcBazin()}
-          </Item>
-          <Item
-            sx={{
-              width: "27vh",
-              height: "15vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            Calculo Graham
-            {CalcGraham()}
-          </Item>
+        <Stack direction="row" spacing={2}>
+          <Card variant="outlined" sx={{ maxWidth: 360 }}>
+            <Box sx={{ p: 2 }}>
+              <Stack
+                direction="row"
+                sx={{ justifyContent: "space-between", alignItems: "center" }}
+              >
+                <Typography gutterBottom variant="h6" component="div">
+                  Calculo Bazin
+                </Typography>
+              </Stack>
+            </Box>
+            <Divider />
+            <Box sx={{ p: 2 }}>
+              <Typography gutterBottom variant="body2">
+                {CalcBazin()}
+              </Typography>
+            </Box>
+          </Card>
+
+          <Card variant="outlined" sx={{ maxWidth: 360 }}>
+            <Box sx={{ p: 2 }}>
+              <Stack
+                direction="row"
+                sx={{ justifyContent: "space-between", alignItems: "center" }}
+              >
+                <Typography gutterBottom variant="h6" component="div">
+                  Calculo Graham
+                </Typography>
+              </Stack>
+            </Box>
+            <Divider />
+            <Box sx={{ p: 2 }}>
+              <Typography gutterBottom variant="body2">
+                {CalcGraham()}
+              </Typography>
+            </Box>
+          </Card>
         </Stack>
       </Box>
     </Box>
