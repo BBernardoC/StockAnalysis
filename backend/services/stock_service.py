@@ -2,10 +2,9 @@ import yfinance as yf
 from models.stock import Stock, StockInfo
 
 #retorna close, high, low, open, volume
-def getStock(ticker, timestamp='1mo'):
+def getStock(ticker, timestamp='5y'):
     ticker_name = f'{ticker}.SA'
     dados = yf.download(ticker_name, period=timestamp)
-    print(dados.head())  # mostra as primeiras linhas do dataframe
     if dados.empty:
         return None
 

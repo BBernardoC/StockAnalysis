@@ -1,8 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
@@ -24,7 +22,7 @@ import {
 
 function StockPage() {
   const { ticker } = useParams();
-  const [stockData, setStockData] = useState(null);
+  const [stockData, setStockData] = useState([]);
   const [stockInfo, setStockInfo] = useState(null);
   const [bookValue, setBookValue] = useState(null);
   const [price, setPrice] = useState(null);
@@ -46,7 +44,7 @@ function StockPage() {
   }));
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/stock/${ticker}/1mo`)
+    fetch(`http://127.0.0.1:5000/stock/${ticker}/5y`)
       .then((res) => res.json())
       .then((json) => setStockData(json))
       .catch(() => setStockData({ error: "erro ao buscar os dados" }));
@@ -81,6 +79,7 @@ function StockPage() {
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham;
   };
+  console.log(stockData);
 
   return (
     <Box>
@@ -195,39 +194,56 @@ function StockPage() {
           </Stack>
         </Box>
       </Box>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          width={500}
-          height={300}
-          data={stockData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="pv"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-        </LineChart>
-      </ResponsiveContainer>
+      <Box sx={{ width: "100%", height: 400, mt: 4 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            width={500}
+            height={300}
+            data={stockData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(str) => {
+                const d = new Date(str);
+                return d.toLocaleDateString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                });
+              }}
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="close"
+              stroke="#8884d8"
+              activeDot={{ r: 8 }}
+            />
+            <Line type="monotone" dataKey="open" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      </Box>
       <Box
         sx={{
           display: "flex",
+          justifyContent: "center",
         }}
       >
         <Stack direction="row" spacing={2}>
-          <Card variant="outlined" sx={{ maxWidth: 360 }}>
+          <Card
+            variant="outlined"
+            sx={{
+              maxWidth: 360,
+            }}
+          >
             <Box sx={{ p: 2 }}>
               <Stack
                 direction="row"

@@ -3,7 +3,7 @@ from views.stock_view import render_stock
 from views.stock_view import render_stock_info
 from services.stock_service import getStockInfo
 
-def get_stock(ticker, timestamp='1mo'):
+def get_stock(ticker, timestamp='5y'):
     stock_data = getStock(ticker, timestamp)
     return render_stock(stock_data)
 
