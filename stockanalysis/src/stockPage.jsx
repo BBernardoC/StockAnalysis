@@ -8,7 +8,9 @@ import { styled } from "@mui/material/styles";
 import { useParams } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-
+import DisplayCard from "./stockPriceutils";
+import { BlockMath } from "react-katex";
+import "katex/dist/katex.min.css";
 import {
   LineChart,
   Line,
@@ -69,17 +71,16 @@ function StockPage() {
   }, []);
 
   const CalcBazin = () => {
-    console.log(annualDividend);
     let priceCeiling = annualDividend / 0.06;
-    return priceCeiling;
+    return priceCeiling.toFixed(2);
   };
 
   const CalcGraham = () => {
-    console.log(eps, bookValue);
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
-    return calcGraham;
+    return calcGraham.toFixed(2);
   };
-  console.log(stockData);
+
+  console.log(price);
 
   return (
     <Box>
@@ -91,113 +92,44 @@ function StockPage() {
           marginTop: "20px",
         }}
       >
-        <Box
-          justifyContent={"center"}
-
-          /*second box to hold some metrics*/
-        >
+        <Box alignItems={"center"}>
           <Stack
             direction="row"
             divider={<Divider orientation="vertical" flexItem />}
             spacing={2}
           >
-            <Card variant="outlined" sx={{ maxWidth: 360 }}>
-              <Box sx={{ p: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography gutterBottom variant="h6" component="div">
-                    Preço
-                  </Typography>
-                </Stack>
-              </Box>
-              <Divider />
-              <Box sx={{ p: 2 }}>
-                <Typography gutterBottom variant="body2">
-                  {price}
-                </Typography>
-              </Box>
-            </Card>
-            <Card variant="outlined" sx={{ maxWidth: 360 }}>
-              <Box sx={{ p: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography gutterBottom variant="h6" component="div">
-                    Dividend Yield
-                  </Typography>
-                </Stack>
-              </Box>
-              <Divider />
-              <Box sx={{ p: 2 }}>
-                <Typography gutterBottom variant="body2">
-                  {dividendYield}
-                </Typography>
-              </Box>
-            </Card>
-            <Card variant="outlined" sx={{ maxWidth: 360 }}>
-              <Box sx={{ p: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography gutterBottom variant="h6" component="div">
-                    P/L
-                  </Typography>
-                </Stack>
-              </Box>
-              <Divider />
-              <Box sx={{ p: 2 }}>
-                <Typography gutterBottom variant="body2">
-                  {priceToEarningsRatio}
-                </Typography>
-              </Box>
-            </Card>
-            <Card variant="outlined" sx={{ maxWidth: 360 }}>
-              <Box sx={{ p: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography gutterBottom variant="h6" component="div">
-                    P/VP
-                  </Typography>
-                </Stack>
-              </Box>
-              <Divider />
-              <Box sx={{ p: 2 }}>
-                <Typography gutterBottom variant="body2">
-                  {priceToBook}
-                </Typography>
-              </Box>
-            </Card>
-            <Card variant="outlined" sx={{ maxWidth: 360 }}>
-              <Box sx={{ p: 2 }}>
-                <Stack
-                  direction="row"
-                  sx={{ justifyContent: "space-between", alignItems: "center" }}
-                >
-                  <Typography gutterBottom variant="h6" component="div">
-                    Ticker{" "}
-                  </Typography>
-                </Stack>
-              </Box>
-              <Divider />
-              <Box sx={{ p: 2 }}>
-                <Typography gutterBottom variant="body2">
-                  {ticker}
-                </Typography>
-              </Box>
-            </Card>
+            <DisplayCard name="Preço" data={price} />
+            <DisplayCard
+              name="DY"
+              data={(dividendYield * 100).toFixed(2) + "%"}
+            />
+            <DisplayCard
+              name="P/L"
+              data={bookValue ? bookValue.toFixed(2) : "N/A"}
+            />
+            <DisplayCard
+              name="P/VP"
+              data={priceToBook ? priceToBook.toFixed(2) : "N/A"}
+            />
+            <DisplayCard
+              name="Ticker"
+              data={ticker ? ticker.toUpperCase() : "N/A"}
+            />
           </Stack>
         </Box>
       </Box>
-      <Box sx={{ width: "100%", height: 400, mt: 4 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <Box
+        sx={{
+          width: "100%",
+          height: 400,
+          mt: 4,
+          justifyContent: "center",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <ResponsiveContainer width="90%" height="100%">
           <LineChart
-            width={500}
             height={300}
             data={stockData}
             margin={{
@@ -257,7 +189,13 @@ function StockPage() {
             <Divider />
             <Box sx={{ p: 2 }}>
               <Typography gutterBottom variant="body2">
-                {CalcBazin()}
+                <BlockMath
+                  math={
+                    annualDividend
+                      ? `\\frac{${annualDividend}}{0.06} = ${CalcBazin()}`
+                      : "\\text{Carregando...}"
+                  }
+                />
               </Typography>
             </Box>
           </Card>
@@ -276,7 +214,13 @@ function StockPage() {
             <Divider />
             <Box sx={{ p: 2 }}>
               <Typography gutterBottom variant="body2">
-                {CalcGraham()}
+                <BlockMath
+                  math={
+                    eps && bookValue
+                      ? `\\sqrt{22.5 \\times ${eps} \\times ${bookValue}} = ${CalcGraham()}`
+                      : "\\text{Carregando...}"
+                  }
+                />
               </Typography>
             </Box>
           </Card>

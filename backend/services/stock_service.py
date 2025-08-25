@@ -10,7 +10,6 @@ def getStock(ticker, timestamp='5y'):
 
     stocks = []
     for idx, row in dados.iterrows():
-        print(idx)
         stocks.append(Stock(
             ticker=ticker,
             close=float(row['Close']),

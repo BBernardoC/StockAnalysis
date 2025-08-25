@@ -1,86 +1,46 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import React from "react";
+import { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
+import { useParams } from "react-router-dom";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-
-export default function Example() {
+const DisplayCard = ({ name, data }) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line
-          type="monotone"
-          dataKey="pv"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    </ResponsiveContainer>
+    <Card
+      variant="outlined"
+      sx={{
+        width: 100,
+        maxWidth: 360,
+        borderWidth: 2,
+        height: 95,
+      }}
+    >
+      <Box>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography gutterBottom variant="h6">
+            {name}
+          </Typography>
+        </Stack>
+      </Box>
+      <Divider />
+      <Box>
+        <Typography align="center" justifyContent={"center"} marginTop={1}>
+          {data !== null && data !== undefined ? data : "N/A"}
+        </Typography>
+      </Box>
+    </Card>
   );
-}
+};
+
+export default DisplayCard;
