@@ -171,13 +171,8 @@ function StockPage() {
           justifyContent: "center",
         }}
       >
-        <Stack direction="row" spacing={2}>
-          <Card
-            variant="outlined"
-            sx={{
-              maxWidth: 360,
-            }}
-          >
+        <Stack direction="column" spacing={2}>
+          <Card variant="outlined" sx={{ width: "100%" }}>
             <Box sx={{ p: 2 }}>
               <Stack
                 direction="row"
@@ -185,6 +180,10 @@ function StockPage() {
               >
                 <Typography gutterBottom variant="h6" component="div">
                   Calculo Bazin
+                  <Typography variant="caption" display="block" gutterBottom>
+                    (considerando um dividend yield mínimo de 6%, procura acoes
+                    que pagam bons dividendos para o investidor)
+                  </Typography>
                 </Typography>
               </Stack>
             </Box>
@@ -210,6 +209,10 @@ function StockPage() {
               >
                 <Typography gutterBottom variant="h6" component="div">
                   Calculo Graham
+                  <Typography variant="caption" display="block" gutterBottom>
+                    (formula utilizada para empresas com crescimento estável,
+                    tem em base encontrar o valor intrínseco da ação)
+                  </Typography>
                 </Typography>
               </Stack>
             </Box>
