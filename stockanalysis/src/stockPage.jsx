@@ -105,7 +105,9 @@ function StockPage() {
             />
             <DisplayCard
               name="P/L"
-              data={bookValue ? bookValue.toFixed(2) : "N/A"}
+              data={
+                priceToEarningsRatio ? priceToEarningsRatio.toFixed(2) : "N/A"
+              }
             />
             <DisplayCard
               name="P/VP"
@@ -192,7 +194,7 @@ function StockPage() {
                 <BlockMath
                   math={
                     annualDividend
-                      ? `\\frac{${annualDividend}}{0.06} = ${CalcBazin()}`
+                      ? `\\frac{\\text{dividendo anual}}{0.06} = \\frac{${annualDividend}}{0.06} = ${CalcBazin()}`
                       : "\\text{Carregando...}"
                   }
                 />
@@ -200,7 +202,7 @@ function StockPage() {
             </Box>
           </Card>
 
-          <Card variant="outlined" sx={{ maxWidth: 360 }}>
+          <Card variant="outlined">
             <Box sx={{ p: 2 }}>
               <Stack
                 direction="row"
@@ -217,7 +219,7 @@ function StockPage() {
                 <BlockMath
                   math={
                     eps && bookValue
-                      ? `\\sqrt{22.5 \\times ${eps} \\times ${bookValue}} = ${CalcGraham()}`
+                      ? `\\sqrt{22.5 \\times \\text{Lucro por acao} \\times \\text{valor contabil}} = \\sqrt{22.5 \\times ${eps} \\times ${bookValue}} = ${CalcGraham()}`
                       : "\\text{Carregando...}"
                   }
                 />
