@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import { useParams } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import DisplayCard from "./stockPriceutils";
+import { DisplayCard, FundamentalCard } from "./stockPriceutils";
 import { BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
+import Grid from "@mui/material/Grid";
+import { useStockSetter } from "./stockFundamentals";
 import {
   LineChart,
   Line,
@@ -25,25 +25,44 @@ import {
 function StockPage() {
   const { ticker } = useParams();
   const [stockData, setStockData] = useState([]);
-  const [stockInfo, setStockInfo] = useState(null);
-  const [bookValue, setBookValue] = useState(null);
-  const [price, setPrice] = useState(null);
-  const [dividendYield, setDividentYield] = useState(null);
-  const [priceToEarningsRatio, setPriceToEarningsRatio] = useState(null);
-  const [priceToBook, setPriceToBook] = useState(null);
-  const [annualDividend, setAnnualDividend] = useState(null);
-  const [eps, setEps] = useState(null);
-
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles("dark", {
-      backgroundColor: "#1A2027",
-    }),
-  }));
+  const {
+    stockInfo,
+    ebitda,
+    floatShares,
+    overallRisk,
+    targetHighPrice,
+    targetLowPrice,
+    targetMeanPrice,
+    targetMedianPrice,
+    totalDebt,
+    bookValue,
+    eps,
+    annualDividendPerShare,
+    totalEquity,
+    cash,
+    revenue,
+    netIncome,
+    lastYearRevenue,
+    fiftyTwoWeekHigh,
+    fiftyTwoWeekLow,
+    priceToEarningsRatio,
+    dividendYield,
+    debtToEquity,
+    enterpriseValue,
+    enterpriseToEbitda,
+    enterpriseToRevenue,
+    marketCap,
+    priceToBook,
+    payoutRatio,
+    returnOnEquity,
+    revenueGrowth,
+    revenuePerShare,
+    fiftyTwoWeekHighChange,
+    fiftyTwoWeekHighChangePercent,
+    fiftyTwoWeekLowChange,
+    fiftyTwoWeekLowChangePercent,
+    currentPrice,
+  } = useStockSetter(ticker);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/stock/${ticker}/5y`)
@@ -52,26 +71,8 @@ function StockPage() {
       .catch(() => setStockData({ error: "erro ao buscar os dados" }));
   }, [ticker]);
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:5000/stock/${ticker}`)
-      .then((res) => res.json())
-      .then((json) => {
-        setStockInfo(json);
-        setDividentYield(json.dividendYield);
-        setBookValue(json.bookValue);
-        setPriceToEarningsRatio(json.priceToEarningsRatio);
-        setPriceToBook(json.priceToBook);
-        setPrice(json.currentPrice);
-        setAnnualDividend(json.annualDividendPerShare);
-        setEps(json.eps);
-      })
-      .catch(() =>
-        setStockInfo({ error: "erro ao buscar os dados stockinfo" })
-      );
-  }, []);
-
   const CalcBazin = () => {
-    let priceCeiling = annualDividend / 0.06;
+    let priceCeiling = annualDividendPerShare / 0.06;
     return priceCeiling.toFixed(2);
   };
 
@@ -79,8 +80,6 @@ function StockPage() {
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham.toFixed(2);
   };
-
-  console.log(price);
 
   return (
     <Box>
@@ -98,7 +97,7 @@ function StockPage() {
             divider={<Divider orientation="vertical" flexItem />}
             spacing={2}
           >
-            <DisplayCard name="Preço" data={price} />
+            <DisplayCard name="Preço" data={currentPrice} />
             <DisplayCard
               name="DY"
               data={(dividendYield * 100).toFixed(2) + "%"}
@@ -192,8 +191,8 @@ function StockPage() {
               <Typography gutterBottom variant="body2">
                 <BlockMath
                   math={
-                    annualDividend
-                      ? `\\frac{\\text{dividendo anual}}{0.06} = \\frac{${annualDividend}}{0.06} = ${CalcBazin()}`
+                    annualDividendPerShare
+                      ? `\\frac{\\text{dividendo anual}}{0.06} = \\frac{${annualDividendPerShare}}{0.06} = ${CalcBazin()}`
                       : "\\text{Carregando...}"
                   }
                 />
@@ -230,6 +229,178 @@ function StockPage() {
             </Box>
           </Card>
         </Stack>
+      </Box>
+      <Box margin={4} backgroundColor={"#f5f5f5"} padding={2} borderRadius={2}>
+        <Grid
+          container
+          spacing={4}
+          justifyContent={"center"}
+          alignItems={"center"}
+        >
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Dividendo anual"
+              data={annualDividendPerShare}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Valor contábil" data={bookValue} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Lucro por ação" data={eps} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Valor de mercado" data={marketCap} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Valor da empresa" data={enterpriseValue} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="EBITDA" data={ebitda} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Ações em circulação" data={floatShares} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Risco geral" data={overallRisk} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Preço alvo alto" data={targetHighPrice} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Preço alvo baixo" data={targetLowPrice} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Preço alvo médio" data={targetMeanPrice} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Preço alvo mediano"
+              data={targetMedianPrice}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Dívida total" data={totalDebt} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Patrimônio líquido" data={totalEquity} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Caixa" data={cash} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Receita" data={revenue} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Lucro líquido" data={netIncome} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Receita ano anterior"
+              data={lastYearRevenue}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Máxima 52 semanas" data={fiftyTwoWeekHigh} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Mínima 52 semanas" data={fiftyTwoWeekLow} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="P/L" data={priceToEarningsRatio} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Dividend Yield" data={dividendYield} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Dívida / Patrimônio" data={debtToEquity} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="EV / EBITDA" data={enterpriseToEbitda} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="EV / Receita" data={enterpriseToRevenue} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="P/B" data={priceToBook} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Payout Ratio" data={payoutRatio} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="ROE" data={returnOnEquity} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Crescimento da Receita"
+              data={revenueGrowth}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Receita por ação" data={revenuePerShare} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Variação máxima 52 semanas"
+              data={fiftyTwoWeekHighChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Variação % máxima 52 semanas"
+              data={fiftyTwoWeekHighChangePercent}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Variação mínima 52 semanas"
+              data={fiftyTwoWeekLowChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard
+              name="Variação % mínima 52 semanas"
+              data={fiftyTwoWeekLowChangePercent}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <FundamentalCard name="Preço atual" data={currentPrice} />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );
