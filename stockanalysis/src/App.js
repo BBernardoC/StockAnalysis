@@ -4,20 +4,17 @@ import HomePage from "./homePage";
 import StockPage from "./stockPage";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import './index.css';
 
 
 const theme = createTheme({
-  // Você pode customizar seu tema aqui no futuro (cores, fontes, etc.)
+  // ADICIONAR CUSTOMIZAÇÃO AQUI!!!!!!!!!!!!!!!
 });
 
 function App() {
   return (
-    // O ThemeProvider aplica o tema a todos os componentes filhos
     <ThemeProvider theme={theme}>
-      {/* O CssBaseline normaliza os estilos CSS */}
       <CssBaseline />
-      
-      {/* Sua estrutura de rotas original permanece aqui dentro */}
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
