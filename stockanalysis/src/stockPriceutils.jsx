@@ -10,37 +10,40 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Grid from "@mui/material/Grid";
 
+const formatarNumeroCompleto = (valor) => {
+  const numero = parseFloat(valor);
+
+  if (isNaN(numero)) {
+    return "N/A";
+  }
+
+
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'decimal',
+    maximumFractionDigits: 2, 
+    minimumFractionDigits: 0,  
+  }).format(numero);
+};
+
 export const DisplayCard = ({ name, data }) => {
   return (
-    <Card
-      variant="outlined"
+    <Box
       sx={{
-        width: 100,
-        maxWidth: 360,
-        borderWidth: 2,
-        height: 95,
+        backgroundColor: '#3260ddff', 
+        color: 'white',
+        borderRadius: '12px', 
+        padding: '12px 24px',
+        textAlign: 'center',
+        minWidth: 120,
       }}
     >
-      <Box>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography gutterBottom variant="h6">
-            {name}
-          </Typography>
-        </Stack>
-      </Box>
-      <Divider />
-      <Box>
-        <Typography align="center" justifyContent={"center"} marginTop={1}>
-          {data !== null && data !== undefined ? data : "N/A"}
-        </Typography>
-      </Box>
-    </Card>
+      <Typography variant="body2" component="div" sx={{ opacity: 0.8 }}>
+        {name}
+      </Typography>
+      <Typography variant="h5" component="div" fontWeight="bold">
+        {formatarNumeroCompleto(data)}
+      </Typography>
+    </Box>
   );
 };
 
@@ -50,10 +53,10 @@ export const FundamentalCard = ({ name, data }) => {
       variant="outlined"
       sx={{
         width: 180,
-        maxWidth: 360,
-        borderWidth: 2,
+        maxWidth: 360,     
         height: 95,
         marginBottom: 2,
+        borderColor: 'primary.main',
       }}
     >
       <Box>
@@ -69,10 +72,10 @@ export const FundamentalCard = ({ name, data }) => {
           </Typography>
         </Stack>
       </Box>
-      <Divider />
+      <Divider sx={{ borderColor: 'primary.main' }} />
       <Box>
         <Typography align="center" justifyContent={"center"} marginTop={1}>
-          {data !== null && data !== undefined ? data : "N/A"}
+           {formatarNumeroCompleto(data)}
         </Typography>
       </Box>
     </Card>
