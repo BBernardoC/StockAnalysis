@@ -21,46 +21,19 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { fundamentals } from "./fundamentals";
 
 function StockPage() {
   const { ticker } = useParams();
   const [stockData, setStockData] = useState([]);
   const {
     stockInfo,
-    ebitda,
-    floatShares,
-    overallRisk,
-    targetHighPrice,
-    targetLowPrice,
-    targetMeanPrice,
-    targetMedianPrice,
-    totalDebt,
+    annualDividendPerShare, // para CalcBazin()
+    eps, // para CalcGraham()
     bookValue,
-    eps,
-    annualDividendPerShare,
-    totalEquity,
-    cash,
-    revenue,
-    netIncome,
-    lastYearRevenue,
-    fiftyTwoWeekHigh,
-    fiftyTwoWeekLow,
+    priceToBook,
     priceToEarningsRatio,
     dividendYield,
-    debtToEquity,
-    enterpriseValue,
-    enterpriseToEbitda,
-    enterpriseToRevenue,
-    marketCap,
-    priceToBook,
-    payoutRatio,
-    returnOnEquity,
-    revenueGrowth,
-    revenuePerShare,
-    fiftyTwoWeekHighChange,
-    fiftyTwoWeekHighChangePercent,
-    fiftyTwoWeekLowChange,
-    fiftyTwoWeekLowChangePercent,
     currentPrice,
   } = useStockSetter(ticker);
 
@@ -79,6 +52,20 @@ function StockPage() {
   const CalcGraham = () => {
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham.toFixed(2);
+  };
+
+  const GraphData = () => {
+    if (!stockData || stockData.length === 0) {
+      return [];
+    }
+    const valueList = stockData.map((data) => ({
+      date: data.date,
+      open: data.open,
+    }));
+
+    valueList[valueList.length - 1].open = currentPrice;
+
+    return valueList;
   };
 
   return (
@@ -132,7 +119,7 @@ function StockPage() {
         <ResponsiveContainer width="90%" height="100%">
           <LineChart
             height={300}
-            data={stockData}
+            data={GraphData()}
             margin={{
               top: 5,
               right: 30,
@@ -156,11 +143,11 @@ function StockPage() {
             <Legend />
             <Line
               type="monotone"
-              dataKey="close"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
+              dataKey="open"
+              stroke="#82ca9d"
+              dot={false}
+              strokeWidth={2}
             />
-            <Line type="monotone" dataKey="open" stroke="#82ca9d" />
           </LineChart>
         </ResponsiveContainer>
       </Box>
@@ -231,175 +218,43 @@ function StockPage() {
         </Stack>
       </Box>
       <Box margin={4} backgroundColor={"#f5f5f5"} padding={2} borderRadius={2}>
+        <Typography variant="h4" gutterBottom>
+          Dados Fundamentais de {ticker}
+        </Typography>
+
         <Grid
           container
           spacing={4}
           justifyContent={"center"}
           alignItems={"center"}
         >
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Dividendo anual"
-              data={annualDividendPerShare}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Valor contábil" data={bookValue} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Lucro por ação" data={eps} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Valor de mercado" data={marketCap} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Valor da empresa" data={enterpriseValue} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="EBITDA" data={ebitda} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Ações em circulação" data={floatShares} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Risco geral" data={overallRisk} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Preço alvo alto" data={targetHighPrice} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Preço alvo baixo" data={targetLowPrice} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Preço alvo médio" data={targetMeanPrice} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Preço alvo mediano"
-              data={targetMedianPrice}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Dívida total" data={totalDebt} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Patrimônio líquido" data={totalEquity} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Caixa" data={cash} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Receita" data={revenue} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Lucro líquido" data={netIncome} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Receita ano anterior"
-              data={lastYearRevenue}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Máxima 52 semanas" data={fiftyTwoWeekHigh} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Mínima 52 semanas" data={fiftyTwoWeekLow} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="P/L" data={priceToEarningsRatio} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Dividend Yield" data={dividendYield} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Dívida / Patrimônio" data={debtToEquity} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="EV / EBITDA" data={enterpriseToEbitda} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="EV / Receita" data={enterpriseToRevenue} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="P/B" data={priceToBook} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Payout Ratio" data={payoutRatio} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="ROE" data={returnOnEquity} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Crescimento da Receita"
-              data={revenueGrowth}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Receita por ação" data={revenuePerShare} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Variação máxima 52 semanas"
-              data={fiftyTwoWeekHighChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Variação % máxima 52 semanas"
-              data={fiftyTwoWeekHighChangePercent}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Variação mínima 52 semanas"
-              data={fiftyTwoWeekLowChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard
-              name="Variação % mínima 52 semanas"
-              data={fiftyTwoWeekLowChangePercent}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <FundamentalCard name="Preço atual" data={currentPrice} />
-          </Grid>
+          {fundamentals
+            .filter(
+              (item) =>
+                ![
+                  "fiftyTwoWeekLowChange",
+                  "fiftyTwoWeekLowChangePercent",
+                  "fiftyTwoWeekHighChangePercent",
+                  "fiftyTwoWeekHighChange",
+                  "fiftyTwoWeekLow",
+                  "fiftyTwoWeekHigh",
+                  "targetMedianPrice",
+                  "targetMeanPrice",
+                  "targetLowPrice",
+                  "targetHighPrice",
+                  "currentPrice",
+                  "overallRisk",
+                  "bookValue",
+                ].includes(item.key)
+            )
+            .map((item, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <FundamentalCard
+                  name={item.name}
+                  data={stockInfo?.[item.key] ?? "N/A"}
+                />
+              </Grid>
+            ))}
         </Grid>
       </Box>
     </Box>

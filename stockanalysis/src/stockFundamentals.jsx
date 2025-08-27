@@ -49,11 +49,6 @@ export const useStockSetter = (ticker) => {
         setStockInfo(json);
         setEbitda(json.ebitda);
         setFloatShares(json.floatShares);
-        setOverallRisk(json.overallRisk);
-        setTargetHighPrice(json.targetHighPrice);
-        setTargetLowPrice(json.targetLowPrice);
-        setTargetMeanPrice(json.targetMeanPrice);
-        setTargetMedianPrice(json.targetMedianPrice);
         setTotalDebt(json.totalDebt);
         setBookValue(json.bookValue);
         setEps(json.eps);
@@ -89,6 +84,7 @@ export const useStockSetter = (ticker) => {
   }, [ticker]);
 
   return {
+    stockInfo,
     ebitda,
     floatShares,
     overallRisk,
