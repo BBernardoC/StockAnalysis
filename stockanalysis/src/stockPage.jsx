@@ -10,6 +10,8 @@ import { DisplayCard, FundamentalCard } from "./stockPriceutils";
 import { BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import Grid from "@mui/material/Grid";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useStockSetter } from "./stockFundamentals";
 import {
   LineChart,
@@ -22,8 +24,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { fundamentals } from "./fundamentals";
-
+import Button from "@mui/material/Button";
 function StockPage() {
+  const [showDetails, setShowDetails] = useState(false);
+
   const { ticker } = useParams();
   const [stockData, setStockData] = useState([]);
   const {
@@ -45,11 +49,14 @@ function StockPage() {
   }, [ticker]);
 
   const CalcBazin = () => {
+    if (!annualDividendPerShare) return "N/A";
     let priceCeiling = annualDividendPerShare / 0.06;
     return priceCeiling.toFixed(2);
   };
 
   const CalcGraham = () => {
+    if (!eps || !bookValue) return "N/A";
+
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham.toFixed(2);
   };
@@ -70,41 +77,24 @@ function StockPage() {
 
   return (
     <Box>
-      <Box
-        sx={{
-          height: "30vh",
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "20px",
-        }}
-      >
-        <Box alignItems={"center"}>
-          <Stack
-            direction="row"
-            divider={<Divider orientation="vertical" flexItem />}
-            spacing={2}
-          >
-            <DisplayCard name="Preço" data={currentPrice} />
-            <DisplayCard
-              name="DY"
-              data={(dividendYield * 100).toFixed(2) + "%"}
-            />
-            <DisplayCard
-              name="P/L"
-              data={
-                priceToEarningsRatio ? priceToEarningsRatio.toFixed(2) : "N/A"
-              }
-            />
-            <DisplayCard
-              name="P/VP"
-              data={priceToBook ? priceToBook.toFixed(2) : "N/A"}
-            />
-            <DisplayCard
-              name="Ticker"
-              data={ticker ? ticker.toUpperCase() : "N/A"}
-            />
-          </Stack>
-        </Box>
+      <Typography variant="h4" component="h1" fontWeight="bold">
+        {ticker ? ticker.toUpperCase() : "Carregando..."}
+      </Typography>
+      <Box>
+        <Stack
+          direction={"row"}
+          spacing={1}
+          justifyContent={"right"}
+          mt={4}
+          mr={12}
+        >
+          <Button variant="contained">dia</Button>
+          <Button variant="contained">semana</Button>
+          <Button variant="contained">1 mes</Button>
+          <Button variant="contained">6 meses</Button>
+          <Button variant="contained">1 ano</Button>
+          <Button variant="contained">5 anos</Button>
+        </Stack>
       </Box>
       <Box
         sx={{
@@ -114,6 +104,8 @@ function StockPage() {
           justifyContent: "center",
           display: "flex",
           alignItems: "center",
+          backgroundColor: "#f5f5f5",
+          borderRadius: 2,
         }}
       >
         <ResponsiveContainer width="90%" height="100%">
@@ -150,6 +142,110 @@ function StockPage() {
             />
           </LineChart>
         </ResponsiveContainer>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "20px",
+        }}
+      >
+        <Box alignItems={"center"}>
+          <Stack
+            direction="row"
+            divider={<Divider orientation="vertical" flexItem />}
+            spacing={2}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap", // <- permite quebrar se faltar espaço
+              width: "100%", // <- garante que ocupe a linha inteira
+            }}
+          >
+            <DisplayCard name="Preço" data={currentPrice} />
+            <DisplayCard
+              name="DY"
+              data={(dividendYield * 100).toFixed(2) + "%"}
+            />
+            <DisplayCard
+              name="P/L"
+              data={
+                priceToEarningsRatio ? priceToEarningsRatio.toFixed(2) : "N/A"
+              }
+            />
+            <DisplayCard
+              name="P/VP"
+              data={priceToBook ? priceToBook.toFixed(2) : "N/A"}
+            />
+            <DisplayCard
+              name="Ticker"
+              data={ticker ? ticker.toUpperCase() : "N/A"}
+            />
+          </Stack>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Button
+              onClick={() => setShowDetails(!showDetails)}
+              endIcon={showDetails ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            >
+              {showDetails ? "Ver Menos" : "Ver Mais"}
+            </Button>
+          </Box>
+          {showDetails && (
+            <Box
+              margin={4}
+              backgroundColor={"#f5f5f5"}
+              padding={2}
+              borderRadius={2}
+              sx={{
+                display: showDetails ? "block" : "none",
+                transition: "all 0s", // instantâneo
+              }}
+            >
+              <Typography variant="h4" gutterBottom>
+                Dados Fundamentais de {ticker}
+              </Typography>
+
+              <Grid
+                container
+                spacing={4}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                {fundamentals
+                  .filter(
+                    (item) =>
+                      ![
+                        "fiftyTwoWeekLowChange",
+                        "fiftyTwoWeekLowChangePercent",
+                        "fiftyTwoWeekHighChangePercent",
+                        "fiftyTwoWeekHighChange",
+                        "fiftyTwoWeekLow",
+                        "fiftyTwoWeekHigh",
+                        "targetMedianPrice",
+                        "targetMeanPrice",
+                        "targetLowPrice",
+                        "targetHighPrice",
+                        "currentPrice",
+                        "overallRisk",
+                        "bookValue",
+                        "dividendYield",
+                        "priceToEarningsRatio",
+                        "priceToBook",
+                      ].includes(item.key)
+                  )
+                  .map((item, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
+                      <FundamentalCard
+                        name={item.name}
+                        data={stockInfo?.[item.key] ?? "N/A"}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            </Box>
+          )}
+        </Box>
       </Box>
       <Box
         sx={{
@@ -216,46 +312,6 @@ function StockPage() {
             </Box>
           </Card>
         </Stack>
-      </Box>
-      <Box margin={4} backgroundColor={"#f5f5f5"} padding={2} borderRadius={2}>
-        <Typography variant="h4" gutterBottom>
-          Dados Fundamentais de {ticker}
-        </Typography>
-
-        <Grid
-          container
-          spacing={4}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
-          {fundamentals
-            .filter(
-              (item) =>
-                ![
-                  "fiftyTwoWeekLowChange",
-                  "fiftyTwoWeekLowChangePercent",
-                  "fiftyTwoWeekHighChangePercent",
-                  "fiftyTwoWeekHighChange",
-                  "fiftyTwoWeekLow",
-                  "fiftyTwoWeekHigh",
-                  "targetMedianPrice",
-                  "targetMeanPrice",
-                  "targetLowPrice",
-                  "targetHighPrice",
-                  "currentPrice",
-                  "overallRisk",
-                  "bookValue",
-                ].includes(item.key)
-            )
-            .map((item, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <FundamentalCard
-                  name={item.name}
-                  data={stockInfo?.[item.key] ?? "N/A"}
-                />
-              </Grid>
-            ))}
-        </Grid>
       </Box>
     </Box>
   );

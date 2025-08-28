@@ -44,6 +44,20 @@ export const DisplayCard = ({ name, data }) => {
   );
 };
 
+const formatarNumeroCompleto = (valor) => {
+  const numero = parseFloat(valor);
+
+  if (isNaN(numero)) {
+    return "N/A";
+  }
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "decimal",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  }).format(numero);
+};
+
 export const FundamentalCard = ({ name, data }) => {
   return (
     <Card
@@ -72,7 +86,7 @@ export const FundamentalCard = ({ name, data }) => {
       <Divider />
       <Box>
         <Typography align="center" justifyContent={"center"} marginTop={1}>
-          {data !== null && data !== undefined ? data : "N/A"}
+          {formatarNumeroCompleto(data)}
         </Typography>
       </Box>
     </Card>
