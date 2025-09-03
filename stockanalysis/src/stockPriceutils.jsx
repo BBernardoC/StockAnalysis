@@ -15,10 +15,12 @@ export const DisplayCard = ({ name, data }) => {
     <Card
       variant="outlined"
       sx={{
-        width: 100,
-        maxWidth: 360,
-        borderWidth: 2,
-        height: 95,
+        backgroundColor: "#3260ddff",
+        color: "white",
+        borderRadius: "12px",
+        padding: "12px 24px",
+        textAlign: "center",
+        minWidth: 120,
       }}
     >
       <Box>
@@ -63,11 +65,12 @@ export const FundamentalCard = ({ name, data }) => {
     <Card
       variant="outlined"
       sx={{
-        width: 180,
-        maxWidth: 360,
-        borderWidth: 2,
-        height: 95,
-        marginBottom: 2,
+        backgroundColor: "#3260ddff",
+        color: "white",
+        borderRadius: "12px",
+        padding: "12px 24px",
+        textAlign: "center",
+        minWidth: 120,
       }}
     >
       <Box>
@@ -83,7 +86,7 @@ export const FundamentalCard = ({ name, data }) => {
           </Typography>
         </Stack>
       </Box>
-      <Divider />
+      <Divider sx={{ borderColor: "primary.main" }} />
       <Box>
         <Typography align="center" justifyContent={"center"} marginTop={1}>
           {formatarNumeroCompleto(data)}

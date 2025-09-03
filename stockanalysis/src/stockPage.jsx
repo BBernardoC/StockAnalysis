@@ -25,15 +25,21 @@ import {
 } from "recharts";
 import { fundamentals } from "./fundamentals";
 import Button from "@mui/material/Button";
+
 function StockPage() {
   const [showDetails, setShowDetails] = useState(false);
-
   const { ticker } = useParams();
+
+  // estado para dados brutos (sempre mantém os 5 anos)
   const [stockData, setStockData] = useState([]);
+
+  // estado para dados filtrados (mostrados no gráfico)
+  const [filteredData, setFilteredData] = useState([]);
+
   const {
     stockInfo,
-    annualDividendPerShare, // para CalcBazin()
-    eps, // para CalcGraham()
+    annualDividendPerShare,
+    eps,
     bookValue,
     priceToBook,
     priceToEarningsRatio,
@@ -44,9 +50,39 @@ function StockPage() {
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/stock/${ticker}/5y`)
       .then((res) => res.json())
-      .then((json) => setStockData(json))
+      .then((json) => {
+        setStockData(json);
+        setFilteredData(json); // inicia mostrando tudo (5Y)
+      })
       .catch(() => setStockData({ error: "erro ao buscar os dados" }));
   }, [ticker]);
+
+  const handleFilter = (period) => {
+    if (!stockData || stockData.length === 0) return;
+
+    switch (period) {
+      case "1d":
+        setFilteredData(stockData.slice(-1));
+        break;
+      case "1w":
+        setFilteredData(stockData.slice(-5));
+        break;
+      case "1m":
+        setFilteredData(stockData.slice(-20));
+        break;
+      case "6m":
+        setFilteredData(stockData.slice(-120));
+        break;
+      case "1y":
+        setFilteredData(stockData.slice(-252));
+        break;
+      case "5y":
+        setFilteredData(stockData);
+        break;
+      default:
+        setFilteredData(stockData);
+    }
+  };
 
   const CalcBazin = () => {
     if (!annualDividendPerShare) return "N/A";
@@ -56,22 +92,20 @@ function StockPage() {
 
   const CalcGraham = () => {
     if (!eps || !bookValue) return "N/A";
-
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham.toFixed(2);
   };
 
   const GraphData = () => {
-    if (!stockData || stockData.length === 0) {
+    if (!filteredData || filteredData.length === 0) {
       return [];
     }
-    const valueList = stockData.map((data) => ({
+    const valueList = filteredData.map((data) => ({
       date: data.date,
       open: data.open,
     }));
 
     valueList[valueList.length - 1].open = currentPrice;
-
     return valueList;
   };
 
@@ -80,6 +114,7 @@ function StockPage() {
       <Typography variant="h4" component="h1" fontWeight="bold">
         {ticker ? ticker.toUpperCase() : "Carregando..."}
       </Typography>
+      {/* Botões de filtro */}
       <Box>
         <Stack
           direction={"row"}
@@ -88,12 +123,24 @@ function StockPage() {
           mt={4}
           mr={12}
         >
-          <Button variant="contained">dia</Button>
-          <Button variant="contained">semana</Button>
-          <Button variant="contained">1 mes</Button>
-          <Button variant="contained">6 meses</Button>
-          <Button variant="contained">1 ano</Button>
-          <Button variant="contained">5 anos</Button>
+          <Button variant="outlined" onClick={() => handleFilter("1d")}>
+            1D
+          </Button>
+          <Button variant="outlined" onClick={() => handleFilter("1w")}>
+            1W
+          </Button>
+          <Button variant="outlined" onClick={() => handleFilter("1m")}>
+            1M
+          </Button>
+          <Button variant="outlined" onClick={() => handleFilter("6m")}>
+            6M
+          </Button>
+          <Button variant="outlined" onClick={() => handleFilter("1y")}>
+            1Y
+          </Button>
+          <Button variant="outlined" onClick={() => handleFilter("5y")}>
+            5Y
+          </Button>
         </Stack>
       </Box>
       <Box
@@ -104,7 +151,6 @@ function StockPage() {
           justifyContent: "center",
           display: "flex",
           alignItems: "center",
-          backgroundColor: "#f5f5f5",
           borderRadius: 2,
         }}
       >
@@ -143,7 +189,6 @@ function StockPage() {
           </LineChart>
         </ResponsiveContainer>
       </Box>
-
       <Box
         sx={{
           display: "flex",
@@ -194,7 +239,6 @@ function StockPage() {
           {showDetails && (
             <Box
               margin={4}
-              backgroundColor={"#f5f5f5"}
               padding={2}
               borderRadius={2}
               sx={{
