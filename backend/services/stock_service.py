@@ -1,6 +1,8 @@
 import yfinance as yf
-from models.stock import Stock, StockInfo
-
+from models.stock import Stock, StockInfo, MonteCarloResult
+import numpy as np
+import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
 #retorna close, high, low, open, volume
 def getStock(ticker, timestamp='5y'):
     ticker_name = f'{ticker}.SA'
@@ -58,7 +60,9 @@ def getStockInfo(ticker):
     enterpriseToEbitda = enterpriseValue / ebitda if ebitda else None
     enterpriseToRevenue = enterpriseValue / revenue if revenue else None
     marketCap = currentPrice * floatShares
-    priceToBook = currentPrice/bookValue if bookValue else None
+    priceToBook = data.get('PriceToBook') 
+    if priceToBook == None: 
+        priceToBook = (currentPrice / bookValue if bookValue else None)
     payoutRatio = annualDividendPerShare / eps if eps else None
     returnOnEquity = netIncome / totalEquity if totalEquity else None
     revenuePerShare = revenue / floatShares if floatShares else None
@@ -106,5 +110,56 @@ def getStockInfo(ticker):
         fiftyTwoWeekLowChangePercent=fiftyTwoWeekLowChangePercent,
         currentPrice=currentPrice
     )
-
     return stock_info.to_dict()
+
+
+def getMontecarlo(stocks, simulations=1000, days=100):
+   
+
+    # -------------------------------
+    # Preparar dados
+    # -------------------------------
+    dados = pd.DataFrame([{
+        "date": str(s.date),
+        "close": s.close
+    } for s in stocks])
+
+    dados = dados.sort_values(by="date").reset_index(drop=True)
+    prices = dados['close'].values
+
+    # Ajustar modelo ARIMA
+    model = ARIMA(prices, order=(1,1,1))
+    fitted_model = model.fit()
+
+    # Último preço conhecido
+    last_price = prices[-1]
+
+    # -------------------------------
+    # Distribuição de retornos
+    # -------------------------------
+    resid_std = fitted_model.resid.std()
+    resid_mean = fitted_model.resid.mean()
+
+    # Simular retornos com base nos resíduos
+    random_returns = np.random.normal(
+        loc=resid_mean, 
+        scale=resid_std, 
+        size=(simulations, days)
+    )
+
+    # Preço inicial replicado para cada simulação
+    start_prices = np.full((simulations, 1), last_price)
+
+    # Construir séries de preços cumulativos
+    price_paths = np.concatenate([start_prices, start_prices + np.cumsum(random_returns, axis=1)], axis=1)
+
+    # -------------------------------
+    # DataFrame de resultados
+    # -------------------------------
+    dates = pd.date_range(start=dados['date'].iloc[-1], periods=days+1, freq='D')
+
+    simulation_df = pd.DataFrame(price_paths.T)
+    simulation_df.insert(0, "date", dates)
+    simulation_df.columns = simulation_df.columns.map(str)
+
+    return MonteCarloResult(simulation_df)

@@ -106,3 +106,13 @@ class StockInfo:
             "fiftyTwoWeekLowChangePercent": self.fiftyTwoWeekLowChangePercent,
             "currentPrice": self.currentPrice
         }
+    
+
+class MonteCarloResult:
+    def __init__(self, simulation_df):
+        self.simulation = simulation_df.to_dict()
+
+    def to_dict(self):
+        return {
+            "simulation": self.simulation
+        }

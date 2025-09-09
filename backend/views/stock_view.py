@@ -16,3 +16,8 @@ def render_stock_info(stock_info):
 
         return jsonify({}), 404
     return jsonify(stock_info)
+
+def render_montecarlo(result):
+    if result is None:
+        return jsonify({}), 404
+    return jsonify(result.to_dict())

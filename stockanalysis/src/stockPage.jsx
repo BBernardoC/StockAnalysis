@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
@@ -29,6 +29,8 @@ import Button from "@mui/material/Button";
 function StockPage() {
   const [showDetails, setShowDetails] = useState(false);
   const { ticker } = useParams();
+  const [monteCarloData, setMonteCarloData] = useState(null);
+  const [processedMonteCarlo, setProcessedMonteCarlo] = useState([]);
 
   // estado para dados brutos (sempre mantém os 5 anos)
   const [stockData, setStockData] = useState([]);
@@ -48,6 +50,13 @@ function StockPage() {
   } = useStockSetter(ticker);
 
   useEffect(() => {
+    fetch(`http://127.0.0.1:5000/montecarlo/${ticker}`)
+      .then((res) => res.json())
+      .then((json) => setMonteCarloData(json.simulation))
+      .catch(() => setMonteCarloData(null));
+  }, [ticker]);
+
+  useEffect(() => {
     fetch(`http://127.0.0.1:5000/stock/${ticker}/5y`)
       .then((res) => res.json())
       .then((json) => {
@@ -57,6 +66,11 @@ function StockPage() {
       .catch(() => setStockData({ error: "erro ao buscar os dados" }));
   }, [ticker]);
 
+  useEffect(() => {
+    if (monteCarloData) {
+      setProcessedMonteCarlo(processMonteCarloData(monteCarloData));
+    }
+  }, [monteCarloData]);
   const handleFilter = (period) => {
     if (!stockData || stockData.length === 0) return;
 
@@ -84,6 +98,25 @@ function StockPage() {
     }
   };
 
+  const processMonteCarloData = (data) => {
+    if (!data) return [];
+    const simulations = Object.values(data);
+    const groupedSimulations = [];
+
+    for (let i = 0; i < 40; i++) {
+      const group = simulations.slice(i * 25, (i + 1) * 25);
+      const averages = [];
+      for (let day = 0; day < 100; day += 5) {
+        const dayAverage =
+          group.reduce((sum, sim) => sum + sim[day], 0) / group.length;
+        averages.push({ day, price: dayAverage });
+      }
+      groupedSimulations.push(averages); // Remove a estrutura com id
+    }
+
+    return groupedSimulations;
+  };
+
   const CalcBazin = () => {
     if (!annualDividendPerShare) return "N/A";
     let priceCeiling = annualDividendPerShare / 0.06;
@@ -94,6 +127,24 @@ function StockPage() {
     if (!eps || !bookValue) return "N/A";
     let calcGraham = Math.sqrt(22.5 * eps * bookValue);
     return calcGraham.toFixed(2);
+  };
+
+  const Get_MontecarloDataAll = () => {
+    if (!monteCarloData) return [];
+
+    // Cria um array de objetos para cada simulação
+    const simulations = Object.entries(monteCarloData).map(
+      ([simKey, simData]) => {
+        return Object.entries(simData).map(([dayKey, value]) => ({
+          day: parseInt(dayKey) + 1,
+          value,
+          simulation: simKey,
+        }));
+      }
+    );
+
+    // Retorna array de arrays (uma linha por simulação)
+    return simulations;
   };
 
   const GraphData = () => {
@@ -111,9 +162,6 @@ function StockPage() {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" fontWeight="bold">
-        {ticker ? ticker.toUpperCase() : "Carregando..."}
-      </Typography>
       {/* Botões de filtro */}
       <Box>
         <Stack
@@ -356,6 +404,55 @@ function StockPage() {
             </Box>
           </Card>
         </Stack>
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          height: 400,
+          mt: 4,
+          justifyContent: "center",
+          display: "flex",
+          alignItems: "center",
+          borderRadius: 2,
+        }}
+      >
+        <ResponsiveContainer width="90%" height={400}>
+          <LineChart
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              type="number"
+              dataKey="day"
+              domain={[0, 100]}
+              tickCount={21}
+              allowDuplicatedCategory={false}
+              label={{ value: "Dias", position: "insideBottomRight" }}
+            />
+            <YAxis label="Preço" />
+            <Tooltip />
+            {processedMonteCarlo.map((simulation, i) => (
+              <Line
+                key={i}
+                data={simulation}
+                type="monotone"
+                dataKey="price"
+                stroke={`hsl(${
+                  (i * 360) / processedMonteCarlo.length
+                }, 70%, 50%)`}
+                dot={false}
+                strokeWidth={1}
+                activeDot={{ r: 4 }} // Adiciona um ponto quando hover
+                isAnimationActive={false} // Desativa animação para melhor performance
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
       </Box>
     </Box>
   );
