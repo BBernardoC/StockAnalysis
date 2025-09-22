@@ -12,7 +12,6 @@ def render_stock(stock):
 
 def render_stock_info(stock_info):
     if stock_info is None:
-        print("cheguei na view none")
 
         return jsonify({}), 404
     return jsonify(stock_info)
@@ -21,3 +20,9 @@ def render_montecarlo(result):
     if result is None:
         return jsonify({}), 404
     return jsonify(result.to_dict())
+
+
+def render_wallet(wallet):
+    if wallet is None:
+        return jsonify({}), 404
+    return jsonify(wallet)

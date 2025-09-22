@@ -4,6 +4,8 @@ from views.stock_view import render_stock_info
 from views.stock_view import render_montecarlo
 from services.stock_service import getStockInfo
 from services.stock_service import getMontecarlo
+from views.stock_view import render_wallet
+from db import cursor
 def get_stock(ticker, timestamp='5y'):
     stock_data = getStock(ticker, timestamp)
     return render_stock(stock_data)
@@ -17,3 +19,9 @@ def get_montecarlo(ticker, simulations=1000, days=252):
     stocks = getStock(ticker)
     result = getMontecarlo(stocks, simulations, days)
     return render_montecarlo(result)
+
+
+def get_wallet():
+    cursor.execute("SELECT * FROM v_user_wallet")
+    result = cursor.fetchall()
+    return render_wallet(result)

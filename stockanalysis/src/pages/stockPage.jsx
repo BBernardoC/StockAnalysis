@@ -6,25 +6,36 @@ import Divider from "@mui/material/Divider";
 import { useParams } from "react-router-dom";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { DisplayCard, FundamentalCard } from "./stockPriceutils";
+import { DisplayCard, FundamentalCard } from "../stockPriceutils";
 import { BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import Grid from "@mui/material/Grid";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { useStockSetter } from "./stockFundamentals";
+import { useStockSetter } from "../stockFundamentals";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip as ChartTooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { fundamentals } from "./fundamentals";
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { fundamentals } from "../fundamentals";
 import Button from "@mui/material/Button";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  ChartTooltip,
+  Legend
+);
 
 function StockPage() {
   const [showDetails, setShowDetails] = useState(false);
@@ -160,6 +171,105 @@ function StockPage() {
     return valueList;
   };
 
+  const stockChartData = {
+    labels: GraphData().map((item) => {
+      const d = new Date(item.date);
+      return d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+    }),
+    datasets: [
+      {
+        label: "Preço",
+        data: GraphData().map((item) => item.open),
+        borderColor: "#82ca9d",
+        tension: 0.1,
+        pointRadius: 0,
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const stockChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: "nearest",
+    },
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: true,
+        },
+      },
+      y: {
+        grid: {
+          display: true,
+        },
+      },
+    },
+  };
+
+  // Configure Monte Carlo chart
+  const monteCarloChartData = {
+    labels: Array.from({ length: 21 }, (_, i) => i * 5), // 0 to 100 by steps of 5
+    datasets: processedMonteCarlo.map((simulation, i) => ({
+      label: `Simulação ${i + 1}`,
+      data: simulation.map((point) => point.price),
+      borderColor: `hsl(${(i * 360) / processedMonteCarlo.length}, 70%, 50%)`,
+      tension: 0.1,
+      pointRadius: 0,
+      borderWidth: 1,
+    })),
+  };
+
+  const monteCarloChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false, // Hide legend due to many lines
+      },
+      title: {
+        display: false,
+      },
+    },
+    interaction: {
+      intersect: false,
+      mode: "nearest",
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Dias",
+        },
+        grid: {
+          display: true,
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Preço",
+        },
+        grid: {
+          display: true,
+        },
+      },
+    },
+  };
+
   return (
     <Box>
       {/* Botões de filtro */}
@@ -202,40 +312,9 @@ function StockPage() {
           borderRadius: 2,
         }}
       >
-        <ResponsiveContainer width="90%" height="100%">
-          <LineChart
-            height={300}
-            data={GraphData()}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(str) => {
-                const d = new Date(str);
-                return d.toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                });
-              }}
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="open"
-              stroke="#82ca9d"
-              dot={false}
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <Box sx={{ width: "90%", height: "100%" }}>
+          <Line options={stockChartOptions} data={stockChartData} />
+        </Box>
       </Box>
       <Box
         sx={{
@@ -416,43 +495,9 @@ function StockPage() {
           borderRadius: 2,
         }}
       >
-        <ResponsiveContainer width="90%" height={400}>
-          <LineChart
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              type="number"
-              dataKey="day"
-              domain={[0, 100]}
-              tickCount={21}
-              allowDuplicatedCategory={false}
-              label={{ value: "Dias", position: "insideBottomRight" }}
-            />
-            <YAxis label="Preço" />
-            <Tooltip />
-            {processedMonteCarlo.map((simulation, i) => (
-              <Line
-                key={i}
-                data={simulation}
-                type="monotone"
-                dataKey="price"
-                stroke={`hsl(${
-                  (i * 360) / processedMonteCarlo.length
-                }, 70%, 50%)`}
-                dot={false}
-                strokeWidth={1}
-                activeDot={{ r: 4 }} // Adiciona um ponto quando hover
-                isAnimationActive={false} // Desativa animação para melhor performance
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+        <Box sx={{ width: "90%", height: "100%" }}>
+          <Line options={monteCarloChartOptions} data={monteCarloChartData} />
+        </Box>
       </Box>
     </Box>
   );

@@ -1,6 +1,6 @@
 # backend/app.py
 from flask import Flask
-from controllers.stock_controller import get_stock, get_stock_info, get_montecarlo
+from controllers.stock_controller import get_stock, get_stock_info, get_montecarlo, get_wallet
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -19,6 +19,11 @@ def get_stock_information(ticker):
 @app.route("/montecarlo/<ticker>")
 def montecarlo_route(ticker):
     return get_montecarlo(ticker)
+
+
+@app.route("/wallet")
+def wallet_route():
+    return get_wallet()
 
 if __name__ == "__main__":
     app.run(debug=True)
